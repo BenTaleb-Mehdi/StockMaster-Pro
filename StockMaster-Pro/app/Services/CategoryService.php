@@ -7,9 +7,19 @@ use Illuminate\Support\Str;
 
 class CategoryService
 {
-    public function getAll() {
-        return categories::withCount('products')->latest()->get();
-    }
+public function getAll($search = null) {
+    return categories::withCount('products')
+        ->when($search, function($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('slug', 'like', "%{$search}%");
+        })
+        ->latest()
+        ->get();
+}
+
+public function getAllCount() {
+    return categories::count();
+}
 
     public function store(array $data) {
         $data['slug'] = Str::slug($data['name']);
