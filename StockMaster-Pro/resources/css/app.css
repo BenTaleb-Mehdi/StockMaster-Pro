@@ -1,3 +1,10 @@
+/* 1. Hadu homa l-directives l-asliyin dial Tailwind v3 */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 2. Importi Preline CSS b-tariqa mobashira men l-dist */
+@import "../../node_modules/preline/dist/all.css";
+
+[x-cloak] { display: none !important; }
+
