@@ -26,6 +26,10 @@ public function getAllCount() {
         return categories::create($data);
     }
 
+    public function find($id) {
+        return categories::findOrFail($id);
+    }
+
     public function update($id, array $data) {
         $category = categories::findOrFail($id);
         if(isset($data['name'])) $data['slug'] = Str::slug($data['name']);

@@ -22,6 +22,9 @@ class ProductService
         return number_format($percentage, 0);
     }
 
+    public function findProduct($id){
+        return products::findOrFail($id);
+    }
 
     public function getAllCount() {
         return products::count();
