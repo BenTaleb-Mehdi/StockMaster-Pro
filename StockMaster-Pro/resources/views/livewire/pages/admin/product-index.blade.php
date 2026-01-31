@@ -51,7 +51,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $product->sku }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $product->category->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $product->quantity . ' piece'}}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600" wire:poll.visible>{{ $product->quantity . ' piece'}}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{'$ ' . $product->price }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="py-1 px-2 inline-flex items-center text-xs font-medium bg-green-100 text-green-800 rounded-full">In Stock</span>
@@ -59,6 +59,9 @@
                                 <td class=" flex gap-x-3 justify-end px-8 py-4 whitespace-nowrap text-end text-sm font-medium">
                                     <button class="text-blue-600 hover:text-blue-800" wire:click="edit({{ $product->id}})" @click= "open = true"><i data-lucide="pencil" class="w-4 h-4 text-blue-600"></i>  </button>
                                     <button class="text-blue-600 hover:text-blue-800" wire:click="destory({{ $product->id}})"  wire:confirm="Are you sure you want to delete this product?"><i data-lucide="trash" class="w-4 h-4 text-red-600"></i></button>
+                                    <button wire:click="$dispatch('openAdjustmentModal', { id: {{ $product->id }} })" @click= "openAdjuster = true" class="text-yellow-600 hover:text-yellow-800" title="Ajuster le stock">
+                                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                    </button>
                                 </td>
                             </tr>
                             @endforeach
@@ -79,4 +82,8 @@
     </div>
 
 @include('livewire.pages.admin.partials.form-product')
+  
+        <livewire:pages.admin.stock-adjuster />
+ 
+    
 </div>

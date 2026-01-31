@@ -25,6 +25,7 @@ class Products extends Component
     
     // Search property
     public $search = '';
+    protected $listeners = ['stockUpdated' => '$refresh'];
 
     // Reset pagination when searching
     public function updatingSearch()
