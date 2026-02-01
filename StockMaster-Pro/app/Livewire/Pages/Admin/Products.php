@@ -1,141 +1,119 @@
 <?php
 
 namespace App\Livewire\Pages\Admin;
+
 use App\Services\ProductService;
+use App\Services\CategoryService;
+use App\Services\SupplierService;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Services\SupplierService;
+use Livewire\WithFileUploads;
+
 class Products extends Component
 {
-    use WithPagination;
-    use \Livewire\WithFileUploads;
+    use WithPagination, WithFileUploads;
 
-    // Properties for form
-    public $name;
-    public $sku;
-    public $category_id;  
-    public $productCategoryName;  
-    public $image;
-    public $quantity;
-    public $price;
+    // Form Properties
+    public $name, $sku, $quantity, $price, $image, $productId;
+    public $category_id;
+    public $supplier_id;
     public $min_stock = 5;
-
-    // edit products variables
-    public $isEdit = false;
-    public $productId;
     
-    public $supplier_id; // Khass y-kon hna
+    // UI Properties (bach AlpineJS y-t-syncrona)
+    public $productCategoryName = 'Select Category';
     public $productSupplierName = 'Select Supplier';
-    // Search property
+    public $currentImagePath;
+    public $isEdit = false;
+    
     public $search = '';
     protected $listeners = ['stockUpdated' => '$refresh'];
 
-    // Reset pagination when searching
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
+    public function updatingSearch() { $this->resetPage(); }
 
     public function create()
     {
-        // Kan-reset-iw ga3 l-variables l-asliya
-        $this->reset(['name', 'sku', 'category_id', 'productCategoryName', 'image', 'quantity', 'price', 'productId', 'supplier_id', 'productSupplierName']);
+        // Reset ga3 l-fields
+        $this->reset([
+            'name', 'sku', 'category_id', 'supplier_id', 
+            'quantity', 'price', 'image', 'productId', 
+            'currentImagePath'
+        ]);
         
         $this->isEdit = false;
         $this->min_stock = 5; 
-        $this->productCategoryName = 'Select Category'; // Bach l-input dial l-category i-khwa
-        $this->productSupplierName = 'Select Supplier'; // Bach l-input dial l-supplier i-khwa
+        $this->productCategoryName = 'Select Category';
+        $this->productSupplierName = 'Select Supplier';
     }
 
-    public $currentImagePath;
-
-    public function edit($id, ProductService $productService) {
+    public function edit($id, ProductService $productService) 
+    {
         $this->isEdit = true;
         $this->productId = $id;
         $product = $productService->findProduct($id);
 
         $this->name = $product->name;
-        $this->sku = str_replace('PR-', '', $product->sku); // Remove prefix if needed for display
+        // Bach may-banx PR- f l-input melli n-bghiw n-modifiw
+        $this->sku = str_replace('PR-', '', $product->sku); 
+        
         $this->category_id = $product->category_id;
-        $this->productCategoryName = $product->category->name;
+        $this->productCategoryName = $product->category->name ?? 'Select Category';
+        
+        $this->supplier_id = $product->supplier_id;
+        $this->productSupplierName = $product->supplier->name ?? 'Select Supplier';
+        
         $this->quantity = $product->quantity;
         $this->price = $product->price;
-        $this->supplier_id = $product->supplier_id;
-        $this->productSupplierName = $product->supplier->name;
         $this->min_stock = $product->min_stock;
-        $this->currentImagePath = $product->image_path; // New variable
+        $this->currentImagePath = $product->image_path;
     }
-    
 
     public function save(ProductService $productService)
     {
-        // 1. Validation logic bignore SKU f l-update
         $rules = [
             'name' => 'required|string|max:255',
             'sku' => 'required|string|unique:products,sku,' . ($this->productId ?? 'NULL'),
-            'quantity' => 'required|integer',
-            'price' => 'required|numeric',
-            'min_stock' => 'required|integer|min:5',
+            'quantity' => 'required|integer|min:0',
+            'price' => 'required|numeric|min:0',
+            'min_stock' => 'required|integer|min:1',
             'category_id' => 'required|exists:categories,id',
             'supplier_id' => 'required|exists:suppliers,id',
-            'image' => 'nullable|image|max:1024',
+            'image' => 'nullable|image|max:2048', // 2MB max
         ];
 
         $this->validate($rules);
 
-        if($this->isEdit){
-            $product = $productService->findProduct($this->productId);
-            $updateData = [
-                'name' => $this->name,
-                'sku' => $this->sku,
-                'category_id' => $this->category_id,
-                'quantity' => $this->quantity,
-                'price' => $this->price,
-                'min_stock' => $this->min_stock,
-                'supplier_id' => $this->supplier_id,
-            ];
-            
-            if ($this->image) {
-                $updateData['image_path'] = $this->image->store('products', 'public');
-            }
+        $data = [
+            'name'        => $this->name,
+            'sku'         => $this->isEdit ? $this->sku : 'PR-' . $this->sku,
+            'category_id' => $this->category_id,
+            'supplier_id' => $this->supplier_id,
+            'quantity'    => $this->quantity,
+            'price'       => $this->price,
+            'min_stock'   => $this->min_stock,
+        ];
 
-            $product->update($updateData);
-        } else {
-            $data = [
-                'name' => $this->name,
-                'sku' => 'PR-' . $this->sku,
-                'category_id' => $this->category_id,
-                'quantity' => $this->quantity,
-                'price' => $this->price,
-                'min_stock' => $this->min_stock,
-                'supplier_id' => $this->supplier_id,
-            ];
-
-            if ($this->image) {
-                $data['image_path'] = $this->image->store('products', 'public');
-            }
-
-            $productService->store($data);
+        if ($this->image) {
+            $data['image_path'] = $this->image->store('products', 'public');
         }
 
-        // 2. Reset kolchi f l-ekher bach l-add jdid ikon nqi
-        $this->create();
-        $this->dispatch('product-added'); 
+        if ($this->isEdit) {
+            $product = $productService->findProduct($this->productId);
+            $product->update($data);
+            $this->dispatch('product-updated'); // Optional: zid notification mxtalfa
+        } else {
+            $productService->store($data);
+            $this->dispatch('product-added');
+        }
+
+        $this->create(); // Reset Everything
     }
 
-
-    public function destory($id,ProductService $productService){
-        $product = $productService->findProduct($id);
-        $product->delete();
-    }
-
-    public function render(ProductService $productService, \App\Services\CategoryService $categoryService, \App\Services\SupplierService $supplierService)
+    public function render(ProductService $productService, CategoryService $categoryService, SupplierService $supplierService)
     {
-        $suppliers = $supplierService->getAll();
-        $products = $productService->getAll($this->search);
-        $categories = $categoryService->getAll();
-        
-        return view('livewire.pages.admin.product-index', compact('products', 'categories', 'suppliers'))
-            ->layout('layouts.admin'); 
+        return view('livewire.pages.admin.product-index', [
+            'products'   => $productService->getAll($this->search),
+            'categories' => $categoryService->getAll(),
+            'suppliers'  => $supplierService->getAll(),
+        ])->layout('layouts.admin'); 
     }
 }
