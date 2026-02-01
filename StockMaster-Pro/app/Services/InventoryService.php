@@ -4,20 +4,25 @@ namespace App\Services;
 
 use App\Models\categories;
 use App\Models\products;
+use App\Models\suppliers;
 use Illuminate\Database\Eloquent\Collection;
 
 class InventoryService
 {
     public $product;
     public $category;
-   public function __construct(products $product , categories $category){
+    public $supplier; 
+
+    public function __construct(products $product, categories $category, suppliers $supplier)
+    {
         $this->product = $product;
         $this->category = $category;
-   }
+        $this->supplier = $supplier; 
+    }
 
+    public function listAllProducts()
+    {
 
-   public function listAllProducts(){
-        $products = $this->product->with('categories')->get();
-        return $products;
-   }
+        return $this->product->with(['categories', 'suppliers'])->get();
+    }
 }

@@ -54,8 +54,8 @@
                   <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">{{ $category->products_count . ' pieces' }}</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
-                  <button type="button" wire:click="edit({{ $category->id }})" @click="open = true" class="text-blue-600 hover:text-blue-800 font-semibold px-2">Edit</button>
-                  <button type="button" wire:confirm="Are you sure you want to delete this category?" wire:click="delete({{ $category->id }})" class="text-red-600 hover:text-red-800 font-semibold px-2">Delete</button>
+                  <button type="button" wire:click="edit({{ $category->id }})" @click="open = true" class="text-blue-600 hover:text-blue-800 font-semibold px-2"><i data-lucide="pencil" class="w-4 h-4 text-blue-600"></i></button>
+                  <button type="button" wire:confirm="Are you sure you want to delete this category?" wire:click="delete({{ $category->id }})" class="text-red-600 hover:text-red-800 font-semibold px-2"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
                 </td>
               </tr>
               @endforeach

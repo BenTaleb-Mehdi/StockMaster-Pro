@@ -34,15 +34,15 @@
                         init() {
                             // Watcher bach ila tbeddel l-category f Livewire, Alpine i-7ess bih
                             this.$watch('selected', value => console.log(value));
-                            if('{{ $isEdit }}' && '{{ $productCategoryName }}') {
-                                this.selected = '{{ $productCategoryName }}';
+                            if('{{ $isEdit }}' && '{{ $productSupplierName }}') {
+                                this.selected = '{{ $productSupplierName }}';
                             }
                         }
                     }" 
-                    x-effect="if('{{ $isEdit }}') { selected = '{{ $productCategoryName }}' }"
+                    x-effect="if('{{ $isEdit }}') { selected = '{{ $productSupplierName }}' }"
                     class="group">
                         
-                        <label class="block text-sm font-medium mb-2 text-gray-800 uppercase italic">Category</label>
+                        <label class="block text-sm font-medium mb-2 text-gray-800 uppercase italic">Supplier</label>
                         
                         <div class="relative">
                             <button type="button" @click="selectOpen = !selectOpen" 
@@ -81,6 +81,66 @@
                                         @endforeach
                                     @else
                                         <p class="text-xs text-gray-400 p-3 text-center italic">No categories found.</p>
+                                    @endisset
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-data="{ 
+                        selectOpen: false, 
+                        search: '', 
+                        selected: 'Select Supplier',
+                        init() {
+                            // Watcher bach ila tbeddel l-category f Livewire, Alpine i-7ess bih
+                            this.$watch('selected', value => console.log(value));
+                            if('{{ $isEdit }}' && '{{ $productSupplierName }}') {
+                                this.selected = '{{ $productSupplierName }}';
+                            }
+                        }
+                    }" 
+                    x-effect="if('{{ $isEdit }}') { selected = '{{ $productSupplierName }}' }"
+                    class="group">
+                        
+                        <label class="block text-sm font-medium mb-2 text-gray-800 uppercase italic">Supplier</label>
+                        
+                        <div class="relative">
+                            <button type="button" @click="selectOpen = !selectOpen" 
+                                class="relative w-full text-start py-2.5 px-4 inline-flex justify-between items-center text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 focus:ring-2 focus:ring-blue-500/20 transition-all">
+                                
+                                <span x-text="selected"></span>
+                                
+                                <svg class="w-4 h-4 text-gray-500 transition-transform duration-200" :class="selectOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path d="m6 9 6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+
+                            <div x-show="selectOpen" 
+                                x-transition:enter="transition ease-out duration-100"
+                                x-transition:enter-start="opacity-0 scale-95"
+                                x-transition:enter-end="opacity-100 scale-100"
+                                @click.away="selectOpen = false" 
+                                class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                                
+                                <div class="p-2 border-b border-gray-100 bg-gray-50/50">
+                                    <input type="text" x-model="search" 
+                                        class="py-2 px-3 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500" 
+                                        placeholder="Search suppliers...">
+                                </div>
+
+                                <div class="p-1 max-h-44 overflow-y-auto scrollbar-thin">
+                                    @isset($suppliers)
+                                        @foreach($suppliers as $supplier)
+                                            <button type="button" 
+                                                    x-show="'{{ strtolower($supplier->name) }}'.includes(search.toLowerCase())"
+                                                    @click="selected = '{{ $supplier->name }}'; $wire.set('supplier_id', {{ $supplier->id }}); selectOpen = false" 
+                                                    class="w-full text-left py-2.5 px-3 rounded-lg text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors flex items-center justify-between group">
+                                                {{ $supplier->name }}
+                                                <span x-show="selected === '{{ $supplier->name }}'" class="text-blue-600 font-bold">✓</span>
+                                            </button>
+                                        @endforeach
+                                    @else
+                                        <p class="text-xs text-gray-400 p-3 text-center italic">No suppliers found.</p>
                                     @endisset
                                 </div>
                             </div>

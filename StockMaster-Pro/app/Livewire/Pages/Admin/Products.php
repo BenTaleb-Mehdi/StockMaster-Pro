@@ -4,6 +4,7 @@ namespace App\Livewire\Pages\Admin;
 use App\Services\ProductService;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Services\SupplierService;
 class Products extends Component
 {
     use WithPagination;
@@ -23,6 +24,8 @@ class Products extends Component
     public $isEdit = false;
     public $productId;
     
+    public $supplier_id; // Khass y-kon hna
+    public $productSupplierName = 'Select Supplier';
     // Search property
     public $search = '';
     protected $listeners = ['stockUpdated' => '$refresh'];
@@ -36,11 +39,12 @@ class Products extends Component
     public function create()
     {
         // Kan-reset-iw ga3 l-variables l-asliya
-        $this->reset(['name', 'sku', 'category_id', 'productCategoryName', 'image', 'quantity', 'price', 'productId']);
+        $this->reset(['name', 'sku', 'category_id', 'productCategoryName', 'image', 'quantity', 'price', 'productId', 'supplier_id', 'productSupplierName']);
         
         $this->isEdit = false;
         $this->min_stock = 5; 
         $this->productCategoryName = 'Select Category'; // Bach l-input dial l-category i-khwa
+        $this->productSupplierName = 'Select Supplier'; // Bach l-input dial l-supplier i-khwa
     }
 
     public $currentImagePath;
@@ -56,6 +60,8 @@ class Products extends Component
         $this->productCategoryName = $product->category->name;
         $this->quantity = $product->quantity;
         $this->price = $product->price;
+        $this->supplier_id = $product->supplier_id;
+        $this->productSupplierName = $product->supplier->name;
         $this->min_stock = $product->min_stock;
         $this->currentImagePath = $product->image_path; // New variable
     }
@@ -71,6 +77,7 @@ class Products extends Component
             'price' => 'required|numeric',
             'min_stock' => 'required|integer|min:5',
             'category_id' => 'required|exists:categories,id',
+            'supplier_id' => 'required|exists:suppliers,id',
             'image' => 'nullable|image|max:1024',
         ];
 
@@ -85,6 +92,7 @@ class Products extends Component
                 'quantity' => $this->quantity,
                 'price' => $this->price,
                 'min_stock' => $this->min_stock,
+                'supplier_id' => $this->supplier_id,
             ];
             
             if ($this->image) {
@@ -100,6 +108,7 @@ class Products extends Component
                 'quantity' => $this->quantity,
                 'price' => $this->price,
                 'min_stock' => $this->min_stock,
+                'supplier_id' => $this->supplier_id,
             ];
 
             if ($this->image) {
@@ -120,12 +129,13 @@ class Products extends Component
         $product->delete();
     }
 
-    public function render(ProductService $productService, \App\Services\CategoryService $categoryService)
+    public function render(ProductService $productService, \App\Services\CategoryService $categoryService, \App\Services\SupplierService $supplierService)
     {
+        $suppliers = $supplierService->getAll();
         $products = $productService->getAll($this->search);
         $categories = $categoryService->getAll();
         
-        return view('livewire.pages.admin.product-index', compact('products', 'categories'))
+        return view('livewire.pages.admin.product-index', compact('products', 'categories', 'suppliers'))
             ->layout('layouts.admin'); 
     }
 }

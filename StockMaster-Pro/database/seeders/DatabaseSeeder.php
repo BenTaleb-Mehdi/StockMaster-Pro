@@ -7,6 +7,7 @@ use Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+
 class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
@@ -18,13 +19,16 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        $admin = User::factory()->create([
-            'name' => 'Admin StockMaster',
+        $admin = User::firstOrCreate([
             'email' => 'admin@stock.com',
-            'password' => Hash::make('password123'), // Password bach t-login
+        ], [
+            'name' => 'Admin StockMaster',
+            'password' => Hash::make('password123'),
+            'email_verified_at' => now(),
         ]);
 
         $this->call([
+
             CsvDataSeeder::class,
             RolesSeeder::class
         ]);

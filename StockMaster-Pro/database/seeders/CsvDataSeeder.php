@@ -18,20 +18,28 @@ class CsvDataSeeder extends Seeder
 
 public function run(): void
 {
-    // Seeding Categories
+    // 1. Seeding Categories (Dima hiya l-lowla hit l-produit kaye-htajha)
     $categories = $this->parse(database_path('data/categories.csv'));
     foreach ($categories as $cat) {
-        // Kan-choufo b-l-slug, ila makanch kan-creyiw
         $this->inventoryService->category->firstOrCreate(
             ['slug' => $cat['slug'] ?? \Illuminate\Support\Str::slug($cat['name'])],
             $cat
         );
     }
 
-    // Seeding Products
+    // 2. Seeding Suppliers (Daba zid hado HNA, 9bel l-products!)
+    // Haka melli i-ji l-product fih supplier_id=1, ghadi i-lqah dejà m-kriyi
+    $suppliers = $this->parse(database_path('data/suppliers.csv'));
+    foreach ($suppliers as $supplier) {
+        $this->inventoryService->supplier->firstOrCreate(
+            ['name' => $supplier['name']], 
+            $supplier
+        );
+    }
+
+    // 3. Seeding Products (Hado homa l-lekhrin hit m-rebttin b kolchi)
     $products = $this->parse(database_path('data/products.csv'));
     foreach ($products as $prod) {
-        // Kan-choufo b-l-name (awla sku ila 3ndek unique), ila makanch kan-creyiw
         $this->inventoryService->product->firstOrCreate(
             ['name' => $prod['name']], 
             $prod

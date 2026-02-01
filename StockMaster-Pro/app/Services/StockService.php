@@ -28,4 +28,10 @@ class StockService {
             ]);
         });
     }
+
+    public function getHistory() {
+        return StockAdjustment::with(['product', 'user'])
+            ->latest()
+            ->paginate(15);
+    }
 }
