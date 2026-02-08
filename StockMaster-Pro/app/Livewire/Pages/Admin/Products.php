@@ -18,6 +18,7 @@ class Products extends Component
     public $category_id;
     public $supplier_id;
     public $min_stock = 5;
+    public $selectedCategory = '';
     
     // UI Properties (bach AlpineJS y-t-syncrona)
     public $productCategoryName = 'Select Category';
@@ -26,8 +27,8 @@ class Products extends Component
     public $isEdit = false;
     
     public $search = '';
-    protected $listeners = ['stockUpdated' => '$refresh'];
-
+    protected $listeners = ['stockUpdated' => '$refresh', 'destroy'];
+    public function updatingSelectedCategory() { $this->resetPage(); }
     public function updatingSearch() { $this->resetPage(); }
 
     public function create()
@@ -67,6 +68,16 @@ class Products extends Component
         $this->currentImagePath = $product->image_path;
     }
 
+    public function destroy($id, ProductService $productService)
+    {
+        $productService->delete($id);
+        $this->dispatch('swal:modal', [
+            'type' => 'success',
+            'title' => 'Produit supprimé!',
+            'text' => 'Le produit a été définitivement supprimé.'
+        ]);
+    }
+
     public function save(ProductService $productService)
     {
         $rules = [
@@ -99,21 +110,30 @@ class Products extends Component
         if ($this->isEdit) {
             $product = $productService->findProduct($this->productId);
             $product->update($data);
-            $this->dispatch('product-updated'); // Optional: zid notification mxtalfa
+            $this->dispatch('swal:modal', [
+                'type' => 'success',
+                'title' => 'Produit mis à jour!',
+                'text' => 'Le produit a été modifié avec succès.'
+            ]);
         } else {
             $productService->store($data);
-            $this->dispatch('product-added');
+            $this->dispatch('swal:modal', [
+                'type' => 'success',
+                'title' => 'Produit ajouté!',
+                'text' => 'Le nouveau produit a été ajouté au stock.'
+            ]);
         }
 
         $this->create(); // Reset Everything
     }
 
-    public function render(ProductService $productService, CategoryService $categoryService, SupplierService $supplierService)
-    {
-        return view('livewire.pages.admin.product-index', [
-            'products'   => $productService->getAll($this->search),
-            'categories' => $categoryService->getAll(),
-            'suppliers'  => $supplierService->getAll(),
-        ])->layout('layouts.admin'); 
-    }
+public function render(ProductService $productService, CategoryService $categoryService, SupplierService $supplierService)
+{
+    return view('livewire.pages.admin.product-index', [
+        // Pass the category ID to the service
+        'products'   => $productService->getAll($this->search, $this->selectedCategory),
+        'categories' => $categoryService->getAll(),
+        'suppliers'  => $supplierService->getAllSuppliers(),
+    ])->layout('layouts.admin'); 
+}
 }

@@ -29,8 +29,20 @@ class StockService {
         });
     }
 
-    public function getHistory() {
+    public function getHistory($categoryId = '', $search = '') {
         return StockAdjustment::with(['product', 'user'])
+            ->when($categoryId, function($query) use ($categoryId) {
+                $query->whereHas('product', function($q) use ($categoryId) {
+                    $q->where('category_id', $categoryId);
+                });
+            })
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->whereHas('product', function($pq) use ($search) {
+                        $pq->where('name', 'like', "%{$search}%");
+                    })->orWhere('reason', 'like', "%{$search}%");
+                });
+            })
             ->latest()
             ->paginate(15);
     }

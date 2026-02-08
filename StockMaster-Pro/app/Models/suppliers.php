@@ -10,6 +10,8 @@ class suppliers extends Model
         'name', 'phone', 'address'
     ];
     public function products(){
-        return $this->hasMany(products::class);
+      return $this->hasMany(products::class, 'supplier_id');
     }
+
+    
 }

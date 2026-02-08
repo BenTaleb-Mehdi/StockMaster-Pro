@@ -8,12 +8,23 @@ use Livewire\WithPagination;
 class ProductService
 {
     use WithPagination;
-    public function getAll($search = null) {
-        return products::with('category')
-            ->when($search, function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")->orWhere('sku', 'like', "%{$search}%");
-            })->latest()->paginate(5);
+public function getAll($search = '', $categoryId = '')
+{
+    $query = products::query()->with('category');
+
+    // Filter by search string
+    if (!empty($search)) {
+        $query->where('name', 'like', '%' . $search . '%')
+              ->orWhere('sku', 'like', '%' . $search . '%');
     }
+
+    // Filter by Category if selected
+    if (!empty($categoryId)) {
+        $query->where('category_id', $categoryId);
+    }
+
+    return $query->latest()->paginate(10);
+}
 
     public function calculateStockPercentage($total, $lowStock){
         if ($total <= 0) return 0;

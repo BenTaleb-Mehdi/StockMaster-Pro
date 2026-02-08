@@ -18,6 +18,8 @@ class Categories extends Component
     public $isEdit = false;
     public $CategoryId;
 
+    protected $listeners = ['destroy'];
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -72,8 +74,18 @@ class Categories extends Component
 
         if ($this->isEdit) {
             $categoryService->update($this->CategoryId, $data);
+            $this->dispatch('swal:modal', [
+                'type' => 'success',
+                'title' => 'Catégorie mise à jour!',
+                'text' => 'La catégorie a été modifiée avec succès.'
+            ]);
         } else {
             $categoryService->store($data);
+            $this->dispatch('swal:modal', [
+                'type' => 'success',
+                'title' => 'Catégorie ajoutée!',
+                'text' => 'La nouvelle catégorie a été créée.'
+            ]);
         }
 
         $this->create(); // Reset form
@@ -81,14 +93,18 @@ class Categories extends Component
     }
 
     // Delete b Confirm
-    public function delete($id, CategoryService $categoryService)
+    public function destroy($id, CategoryService $categoryService)
     {
         $category = $categoryService->find($id);
         if ($category->image) {
             Storage::disk('public')->delete($category->image);
         }
         $categoryService->delete($id);
-        $this->dispatch('category-deleted');
+        $this->dispatch('swal:modal', [
+            'type' => 'success',
+            'title' => 'Catégorie supprimée!',
+            'text' => 'La catégorie a été supprimée.'
+        ]);
     }
 
     public function render(CategoryService $categoryService)

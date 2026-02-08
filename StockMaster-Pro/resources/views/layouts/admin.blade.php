@@ -34,6 +34,7 @@
 
  
         </div>
+        @include('livewire.pages.admin.partials.preline-alerts')
     </div>
 </body>
 </html>

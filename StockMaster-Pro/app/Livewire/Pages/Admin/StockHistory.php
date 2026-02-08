@@ -9,9 +9,25 @@ class StockHistory extends Component
 {
     use WithPagination;
 
-    public function render(StockService $stockService)
+    public $selectedCategory = '';
+    public $search = '';
+
+    public function updatingSelectedCategory()
     {
-        $history = $stockService->getHistory();
-        return view('livewire.pages.admin.stock-history', compact('history'))->layout('layouts.admin');
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function render(StockService $stockService, \App\Services\CategoryService $categoryService)
+    {
+        $history = $stockService->getHistory($this->selectedCategory, $this->search);
+        $categories = $categoryService->getAll();
+        
+        return view('livewire.pages.admin.stock-history', compact('history', 'categories'))
+            ->layout('layouts.admin');
     }
 }

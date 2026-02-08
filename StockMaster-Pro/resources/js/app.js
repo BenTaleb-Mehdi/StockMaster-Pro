@@ -9,3 +9,5 @@ document.addEventListener('livewire:init', () => {
         createIcons({ icons });
     });
 });
+
+

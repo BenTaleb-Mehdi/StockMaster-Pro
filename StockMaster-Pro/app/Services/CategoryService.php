@@ -14,7 +14,7 @@ public function getAll($search = null) {
                   ->orWhere('slug', 'like', "%{$search}%");
         })
         ->latest()
-        ->get();
+        ->paginate(10);
 }
 
 public function getAllCount() {

@@ -55,19 +55,19 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                   <button type="button" wire:click="edit({{ $category->id }})" @click="open = true" class="text-blue-600 hover:text-blue-800 font-semibold px-2"><i data-lucide="pencil" class="w-4 h-4 text-blue-600"></i></button>
-                  <button type="button" wire:confirm="Are you sure you want to delete this category?" wire:click="delete({{ $category->id }})" class="text-red-600 hover:text-red-800 font-semibold px-2"><i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i></button>
+                  <button type="button" 
+                          wire:click="$dispatch('swal:confirm', { title: 'Supprimer cette catégorie?', text: 'Cette action est irréversible', icon: 'warning', method: 'destroy', id: {{ $category->id }} })"
+                          class="text-red-600 hover:text-red-800 font-semibold px-2">
+                    <i data-lucide="trash-2" class="w-4 h-4 text-red-600"></i>
+                  </button>
                 </td>
               </tr>
               @endforeach
             </tbody>
           </table>
 
-          <div class="px-6 py-4 border-t border-gray-200 flex justify-between items-center">
-            <span class="text-sm text-gray-600">12 categories total</span>
-            <nav class="flex items-center -space-x-px">
-              <button class="py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm font-medium rounded-s-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50">Previous</button>
-              <button class="py-2 px-2.5 inline-flex justify-center items-center gap-x-1.5 text-sm font-medium rounded-e-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50">Next</button>
-            </nav>
+          <div class="px-6 py-4 border-t border-gray-200">
+            {{ $categories->links('livewire.pages.admin.partials.pagination') }}
           </div>
         </div>
       </div>
