@@ -48,27 +48,27 @@ This project is developed using industry-standard DevOps and Agile practices:
 
    ```
 
-   2. **Install PHP & JS dependencies:**
+2. **Install PHP & JS dependencies:**
    ```bash
     composer install
     npm install && npm run build
 
    ```
 
-   3. **Environment Configuration:**
+3. **Environment Configuration:**
    ```bash
     cp .env.example .env
     php artisan key:generate
 
    ```
 
-   4. **Database Migration & Seeding:**
+4. **Database Migration & Seeding:**
    ```bash
     php artisan migrate --seed
 
    ```
 
-    5. **Run the application:**
+5. **Run the application:**
    ```bash
    php artisan serve
 
