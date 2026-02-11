@@ -66,6 +66,7 @@
                                 <th class="px-6 py-3 text-start text-xs font-semibold uppercase text-gray-500">Quantité</th>
                                 <th class="px-6 py-3 text-start text-xs font-semibold uppercase text-gray-500">Raison</th>
                                 <th class="px-6 py-3 text-start text-xs font-semibold uppercase text-gray-500">Date</th>
+                              
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
@@ -83,6 +84,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $adj->quantity }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm italic text-gray-500">{{ $adj->reason }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $adj->created_at->format('d/m/Y H:i') }}</td>
+                     
                             </tr>
                             @endforeach
                         </tbody>

@@ -7,7 +7,7 @@ use App\Livewire\Pages\Admin\Categories;
 use App\Livewire\Pages\Admin\Dashboard;
 use App\Livewire\Pages\Admin\Profile;
 use App\Livewire\Pages\Admin\SupplierManager;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::view('/', 'livewire.pages.index');
 
@@ -25,7 +25,16 @@ Route::prefix('admin')
             ->name('profile');
         Route::get('stock-history', StockHistory::class)->name('stock.history');
         Route::get('supplier-manager', SupplierManager::class)->name('manager.suppliers');
-});
+
+Route::get('/product-report/{id}', function ($id) {
+    // Kteb l-path kamel dial l-Model bach may-trax ghalat
+    $product = \App\Models\products::with(['category', 'supplier'])->findOrFail($id);
+    
+    // Dot (.) kaye-3ni daxel l-folder
+$pdf = Pdf::loadView('livewire.pages.invoices.product-report', compact('product'));
+    return $pdf->stream('Report-'.$product->sku.'.pdf');
+})->name('product.report');
+        });
 
 Route::prefix('Seller')
     ->name('Seller.')

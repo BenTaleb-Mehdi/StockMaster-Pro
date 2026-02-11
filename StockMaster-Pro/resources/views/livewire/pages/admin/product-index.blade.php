@@ -104,6 +104,9 @@
                                     <button wire:click="$dispatch('openAdjustmentModal', { id: {{ $product->id }} })" @click="openAdjuster = true" class="text-yellow-600 hover:text-yellow-800" title="Ajuster le stock">
                                         <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                                     </button>
+                                    <a href="{{ route('admin.product.report', $product->id) }}" target="_blank" class="text-blue-600 hover:text-blue-800" title="Générer le rapport">
+                                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                                    </a>
                                 </td>
                             </tr>
                             @endforeach
